@@ -41,18 +41,46 @@ pub fn render(expr: &Expr, reg: &SymbolRegistry, ctx: &mut RenderCtx) -> RenderN
             }
         }
 
-        Expr::Superscript(base, exp) => {
+        Expr::Superscript(base, sup) => {
+            if let Expr::Command { name, .. } = base.as_ref() {
+                if let Some(glyph) = reg.get(name) {
+                    if glyph.has_limits() {
+                        let base_r = render(base, reg, ctx);
+                        let sup_r = render(sup, reg, ctx);
+                        return RenderNode::limits(&base_r, &RenderNode::new(0, 0, 0), &sup_r);
+                    }
+                }
+            }
             let base = render(base, reg, ctx);
-            render_power(base, exp, reg, ctx)
+            render_power(base, sup, reg, ctx)
         }
 
         Expr::Subscript(base, sub) => {
+            if let Expr::Command { name, .. } = base.as_ref() {
+                if let Some(glyph) = reg.get(name) {
+                    if glyph.has_limits() {
+                        let base_r = render(base, reg, ctx);
+                        let sub_r = render(sub, reg, ctx);
+                        return RenderNode::limits(&base_r, &sub_r, &RenderNode::new(0, 0, 0));
+                    }
+                }
+            }
             let base = render(base, reg, ctx);
             let sub = render(sub, reg, ctx);
             RenderNode::subscript(&base, &sub)
         }
 
         Expr::BothScripts(base, sub, sup) => {
+            if let Expr::Command { name, .. } = base.as_ref() {
+                if let Some(glyph) = reg.get(name) {
+                    if glyph.has_limits() {
+                        let base_r = render(base, reg, ctx);
+                        let sub_r = render(sub, reg, ctx);
+                        let sup_r = render(sup, reg, ctx);
+                        return RenderNode::limits(&base_r, &sub_r, &sup_r);
+                    }
+                }
+            }
             let base_rendered = render(base, reg, ctx);
             let sub_rendered = render(sub, reg, ctx);
             let sup_rendered = render(sup, reg, ctx);

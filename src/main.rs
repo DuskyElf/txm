@@ -62,7 +62,7 @@ fn build_registry() -> SymbolRegistry {
     for name in &[
         "sin", "cos", "tan", "cot", "sec", "csc", "arcsin", "arccos", "arctan", "sinh", "cosh",
         "tanh", "log", "ln", "lg", "det", "dim", "hom", "ker", "exp", "deg", "gcd", "lcm", "lim",
-        "sup", "inf", "max", "min", "arg", "Pr", "mod",
+        "sup", "inf", "max", "min", "arg", "Pr", "mod", "adj",
     ] {
         r.register(*name, TextGlyph(name));
     }
@@ -70,6 +70,7 @@ fn build_registry() -> SymbolRegistry {
     r.register("binom", BinomGlyph);
     r.register("frac", FracGlyph);
     r.register("sqrt", SqrtGlyph);
+    r.register("lim", LimitGlyph);
 
     for (cmd, ch) in [
         ("infty", '∞'),

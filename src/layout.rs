@@ -329,7 +329,6 @@ impl RenderNode {
         }
     }
 
-    #[allow(dead_code)]
     pub fn limits(base: &Self, lower: &Self, upper: &Self) -> Self {
         let inner_w = base.width.max(lower.width).max(upper.width);
         let h = upper.height + base.height + lower.height;

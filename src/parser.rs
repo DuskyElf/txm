@@ -240,6 +240,7 @@ impl<'a> Parser<'a> {
         let glyph = self.registry.get(name);
         let has_opt = glyph.is_some_and(|g| g.has_optional());
         let n_req = glyph.map_or(0, |g| g.required_args());
+        let has_limits = glyph.is_some_and(|g| g.has_limits());
         let mut args = Vec::new();
 
         if has_opt && self.peek() == Some(&Token::LBracket) {
@@ -249,11 +250,13 @@ impl<'a> Parser<'a> {
             args.push(opt);
         }
 
-        for _ in 0..n_req {
-            self.expect(Token::LBrace);
-            let arg = self.parse_expr()?;
-            self.expect(Token::RBrace);
-            args.push(arg);
+        if !has_limits {
+            for _ in 0..n_req {
+                self.expect(Token::LBrace);
+                let arg = self.parse_expr()?;
+                self.expect(Token::RBrace);
+                args.push(arg);
+            }
         }
 
         Ok(Expr::Command {

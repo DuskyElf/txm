@@ -17,8 +17,12 @@ pub trait Glyph: Debug {
         false
     }
 
+    fn has_limits(&self) -> bool {
+        false
+    }
+
     fn render(&self, args: &[RenderNode], _opts: &[RenderNode], _ctx: &mut RenderCtx)
-    -> RenderNode;
+        -> RenderNode;
 }
 
 pub struct SymbolRegistry {
@@ -38,6 +42,28 @@ impl SymbolRegistry {
 
     pub fn get(&self, name: &str) -> Option<&dyn Glyph> {
         self.map.get(name).map(|g| g.as_ref())
+    }
+}
+
+#[derive(Debug)]
+pub struct LimitGlyph;
+
+impl Glyph for LimitGlyph {
+    fn render(
+        &self,
+        _args: &[RenderNode],
+        _opts: &[RenderNode],
+        _ctx: &mut RenderCtx,
+    ) -> RenderNode {
+        RenderNode::from_str("lim")
+    }
+
+    fn required_args(&self) -> usize {
+        0
+    }
+
+    fn has_limits(&self) -> bool {
+        true
     }
 }
 
@@ -84,7 +110,7 @@ impl Glyph for BinomGlyph {
         _ctx: &mut RenderCtx,
     ) -> RenderNode {
         let inner = RenderNode::vstack(&args[0], &args[1], ' ', 0);
-        RenderNode::stretchy_delim(&inner, '(', ')')
+        RenderNode::stretchy_delim(&inner, '(', ')', false)
     }
 }
 
