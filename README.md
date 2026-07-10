@@ -9,51 +9,12 @@ nix run github:thatmagicalcat/txm -- "E = mc^2"
 
 Requires [Nix](https://nix.dev/install-nix) with flakes enabled.
 
-# Example:
-```
-$ txm "f(x) = f(a) + f'(a)(x - a) + \frac{f''(a)}{2!}(x - a)^2 + \frac{f'''(a)}{3!}(x - a)^3+\dots"
-┌───────────────────────────────────────────────────────────────────────┐
-│                                                                       │
-│                               f''(a)             f'''(a)              │
-│ f(x) = f(a) + f'(a)(x - a) + ────────(x - a)² + ─────────(x - a)³ + ⋯ │
-│                                 2!                 3!                 │
-│                                                                       │
-└───────────────────────────────────────────────────────────────────────┘
-```
-
-```
-$ txm "\frac{d}{dx}\quad\sin^{-1}(\frac{x}{a}) = \frac{1}{\sqrt{a^2 - x^2}}"
-┌──────────────────────────────────┐
-│                                  │
-│  d      -1⎛  x  ⎞        1       │
-│ ──── sin  ⎟ ─── ⎟ = ──────────── │
-│  dx       ⎝  a  ⎠     ┌────────  │
-│                      ╲│ a² - x²  │
-│                                  │
-└──────────────────────────────────┘
-```
-
-```
-$ txm "\sqrt{\frac{(\frac{\alpha}{\beta})^{\frac{\gamma}{\delta}}}{(\sqrt{\gamma+\frac{\delta}{\lambda}})^{e^{i\pi}} + \binom{n}{k}}}"
-┌────────────────────────────┐
-│                            │
-│  ┌──────────────────────── │
-│  │              γ          │
-│  │              ─          │
-│  │              δ          │
-│  │         ⎛ α ⎞           │
-│  │         ⎟ ─ ⎟           │
-│  │         ⎝ β ⎠           │
-│  │ ─────────────────────── │
-│  │              iπ         │
-│  │             e           │
-│  │ ⎛  ┌────── ⎞            │
-│  │ ⎟  │     δ ⎟      ⎛ n ⎞ │
-│  │ ⎟  │ γ + ─ ⎟    + ⎟   ⎟ │
-│ ╲│ ⎝ ╲│     λ ⎠      ⎝ k ⎠ │
-│                            │
-└────────────────────────────┘
-```
+# Screenshots:
+![s1](./screenshots/1.png)
+![s2](./screenshots/2.png)
+![s3](./screenshots/3.png)
+![s4](./screenshots/4.png)
+![s5](./screenshots/5.png)
 
 ## License
 - Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE))
