@@ -71,6 +71,7 @@ fn build_registry() -> SymbolRegistry {
     r.register("frac", FracGlyph);
     r.register("sqrt", SqrtGlyph);
     r.register("lim", LimitGlyph);
+    r.register("int", IntegralGlyph);
 
     for (cmd, ch) in [
         ("infty", '∞'),
@@ -119,7 +120,6 @@ fn build_registry() -> SymbolRegistry {
         ("supseteq", '⊇'),
         ("cup", '∪'),
         ("cap", '∩'),
-        ("int", '∫'),
         ("sum", '∑'),
         ("prod", '∏'),
         ("lvert", '|'),

@@ -293,6 +293,7 @@ impl RenderNode {
             ('(', ')') => ('⎛', '⎞', '⎝', '⎠', '⎟', '⎟'),
             ('[', ']') => ('⎡', '⎤', '⎣', '⎦', '⎢', '⎢'),
             ('{', '}') => ('⎧', '⎫', '⎩', '⎭', '⎪', '⎪'),
+
             _ if fill => (left, right, left, right, left, right),
             _ => (left, right, left, right, '│', '│'),
         };
@@ -313,6 +314,55 @@ impl RenderNode {
             } else {
                 data[y * w + w - 1] = mid_r;
             }
+        }
+
+        Self {
+            width: w,
+            height: h,
+            baseline,
+            data,
+        }
+    }
+
+    pub fn stretchy_delim_left(inner: &Self, top: char, middle: char, bottom: char) -> Self {
+        let h = inner.height;
+        let w = inner.width + 2;
+        let baseline = inner.baseline;
+
+        let mut data = vec![' '; w * h];
+        inner.blit_into(&mut data, w, 2, 0);
+
+        let mid_l = middle;
+
+        data[0] = top;
+        data[(h - 1) * w] = bottom;
+
+        for y in 1..h - 1 {
+            data[y * w] = mid_l;
+        }
+
+        Self {
+            width: w,
+            height: h,
+            baseline,
+            data,
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn stretchy_delim_right(inner: &Self, top: char, middle: char, bottom: char) -> Self {
+        let h = inner.height;
+        let w = inner.width + 2;
+        let baseline = inner.baseline;
+
+        let mut data = vec![' '; w * h];
+        inner.blit_into(&mut data, w, 0, 0);
+
+        data[w - 1] = top;
+        data[(h - 1) * w + w - 1] = bottom;
+
+        for y in 1..h - 1 {
+            data[y * w + w - 1] = middle;
         }
 
         Self {
@@ -377,14 +427,14 @@ impl RenderNode {
 
         let mut data = vec![' '; w * h];
 
-        let ux = (w.saturating_sub(upper.width)) / 2;
-        upper.blit_into(&mut data, w, ux, 0);
+        // let ux = (w.saturating_sub(upper.width)) / 2;
+        upper.blit_into(&mut data, w, 0, 0);
 
         let bx = (w.saturating_sub(base.width)) / 2;
         base.blit_into(&mut data, w, bx, upper.height);
 
-        let lx = (w.saturating_sub(lower.width)) / 2;
-        lower.blit_into(&mut data, w, lx, upper.height + base.height);
+        // let lx = (w.saturating_sub(lower.width)) / 2;
+        lower.blit_into(&mut data, w, 0, upper.height + base.height);
 
         Self {
             width: w,

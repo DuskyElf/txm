@@ -22,7 +22,7 @@ pub trait Glyph: Debug {
     }
 
     fn render(&self, args: &[RenderNode], _opts: &[RenderNode], _ctx: &mut RenderCtx)
-        -> RenderNode;
+    -> RenderNode;
 }
 
 pub struct SymbolRegistry {
@@ -160,6 +160,59 @@ impl Glyph for SqrtGlyph {
             radicand
         }
     }
+}
+
+#[derive(Debug)]
+pub struct IntegralGlyph;
+
+impl Glyph for IntegralGlyph {
+    fn has_limits(&self) -> bool {
+        true
+    }
+
+    fn required_args(&self) -> usize {
+        1
+    }
+
+fn render(
+    &self,
+    args: &[RenderNode],
+    _opts: &[RenderNode],
+    _ctx: &mut RenderCtx,
+) -> RenderNode {
+    // Render a fixed-length integral symbol
+    if args.is_empty() {
+        RenderNode {
+            width: 2, // symbol + space
+            height: 3,
+            baseline: 1,
+            data: vec!['⎛', ' ', '⎟', ' ', '⎠', ' '],
+        }
+    } else {
+        // no stretching required
+        if args[0].height <= 3 {
+            let w = args[0].width + 2; // symbol + space
+            let mut data = vec![' '; w * 3];
+
+            data[0] = '⎛';
+            data[w] = '⎟';
+            data[2 * w] = '⎠';
+
+            // center one-liner expressions
+            let y = if args[0].height == 1 { 1 } else { 0 };
+            args[0].blit_into(&mut data, w, 2, y);
+
+            return RenderNode {
+                width: w,
+                height: 3,
+                baseline: 1,
+                data,
+            };
+        }
+
+        RenderNode::stretchy_delim_left(&args[0], '⎛', '⎟', '⎠')
+    }
+}
 }
 
 #[derive(Debug)]

@@ -42,45 +42,45 @@ pub fn render(expr: &Expr, reg: &SymbolRegistry, ctx: &mut RenderCtx) -> RenderN
         }
 
         Expr::Superscript(base, sup) => {
-            if let Expr::Command { name, .. } = base.as_ref() {
-                if let Some(glyph) = reg.get(name) {
-                    if glyph.has_limits() {
-                        let base_r = render(base, reg, ctx);
-                        let sup_r = render(sup, reg, ctx);
-                        return RenderNode::limits(&base_r, &RenderNode::new(0, 0, 0), &sup_r);
-                    }
-                }
+            if let Expr::Command { name, .. } = base.as_ref()
+                && let Some(glyph) = reg.get(name)
+                && glyph.has_limits()
+            {
+                let base_r = render(base, reg, ctx);
+                let sup_r = render(sup, reg, ctx);
+                return RenderNode::limits(&base_r, &RenderNode::new(0, 0, 0), &sup_r);
             }
+
             let base = render(base, reg, ctx);
             render_power(base, sup, reg, ctx)
         }
 
         Expr::Subscript(base, sub) => {
-            if let Expr::Command { name, .. } = base.as_ref() {
-                if let Some(glyph) = reg.get(name) {
-                    if glyph.has_limits() {
-                        let base_r = render(base, reg, ctx);
-                        let sub_r = render(sub, reg, ctx);
-                        return RenderNode::limits(&base_r, &sub_r, &RenderNode::new(0, 0, 0));
-                    }
-                }
+            if let Expr::Command { name, .. } = base.as_ref()
+                && let Some(glyph) = reg.get(name)
+                && glyph.has_limits()
+            {
+                let base_r = render(base, reg, ctx);
+                let sub_r = render(sub, reg, ctx);
+                return RenderNode::limits(&base_r, &sub_r, &RenderNode::new(0, 0, 0));
             }
+
             let base = render(base, reg, ctx);
             let sub = render(sub, reg, ctx);
             RenderNode::subscript(&base, &sub)
         }
 
         Expr::BothScripts(base, sub, sup) => {
-            if let Expr::Command { name, .. } = base.as_ref() {
-                if let Some(glyph) = reg.get(name) {
-                    if glyph.has_limits() {
-                        let base_r = render(base, reg, ctx);
-                        let sub_r = render(sub, reg, ctx);
-                        let sup_r = render(sup, reg, ctx);
-                        return RenderNode::limits(&base_r, &sub_r, &sup_r);
-                    }
-                }
+            if let Expr::Command { name, .. } = base.as_ref()
+                && let Some(glyph) = reg.get(name)
+                && glyph.has_limits()
+            {
+                let base_r = render(base, reg, ctx);
+                let sub_r = render(sub, reg, ctx);
+                let sup_r = render(sup, reg, ctx);
+                return RenderNode::limits(&base_r, &sub_r, &sup_r);
             }
+
             let base_rendered = render(base, reg, ctx);
             let sub_rendered = render(sub, reg, ctx);
             let sup_rendered = render(sup, reg, ctx);
@@ -152,15 +152,6 @@ fn render_power(
     reg: &SymbolRegistry,
     ctx: &mut RenderCtx,
 ) -> RenderNode {
-    if let Expr::Number(s) = exp
-        && s.len() == 1
-    {
-        let c = s.chars().next().unwrap();
-        if c.is_ascii_digit() {
-            return RenderNode::superscript_digit(&base, c);
-        }
-    }
-
     if COMPACT_SIMPLE_FRACTIONAL_EXPONENTS
         && let Expr::Command { name, args } = exp
         && name == "frac"

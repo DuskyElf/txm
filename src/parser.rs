@@ -144,7 +144,32 @@ impl<'a> Parser<'a> {
             }
         }
 
-        let mut result = base;
+        // i want to parse things like `\int_a^b{argument}`
+        // we've already parsed the base: `\int`, scripts: `_a^b`
+        // now we check if the base was present in symbol registry and
+        // has_limits = true and if the next symbol after parsing scripts
+        // was LBrace, it is an argument
+
+        let mut result = if let Expr::Command { name, args } = &base
+            && let Some(glyph) = self.registry.get(name)
+            && glyph.has_limits()
+            && self.peek() == Some(&Token::LBrace)
+            && args.len() < glyph.required_args()
+        {
+            // move
+            let Expr::Command { name, mut args } = base else {
+                unreachable!()
+            };
+
+            self.advance(); // eat {
+            let body = self.parse_expr()?;
+            self.expect(Token::RBrace);
+            args.push(body);
+
+            Expr::Command { name, args }
+        } else {
+            base
+        };
 
         if primes > 0 {
             result = Expr::Prime(Box::new(result), primes);
@@ -276,7 +301,7 @@ impl<'a> Parser<'a> {
             _ => {
                 return Err(ParseError(
                     "expected environment name in \\begin{...}".into(),
-                ))
+                ));
             }
         };
         self.expect(Token::RBrace);
