@@ -1,5 +1,7 @@
 use crate::glyph::{
-    AbsGlyph, AccentGlyph, AlphabetGlyph, BinomGlyph, FracGlyph, IntegralGlyph, LimitGlyph, RenderCtx, SqrtGlyph, SummationGlyph, SymbolRegistry, TextGlyph, UnicodeGlyph, to_bb, to_bold, to_italic, to_sans, to_upright
+    AbsGlyph, AccentGlyph, AlphabetGlyph, BinomGlyph, FracGlyph, IntegralGlyph, LimitGlyph,
+    RenderCtx, SqrtGlyph, SummationGlyph, SymbolRegistry, TextGlyph, UnicodeGlyph, to_bb, to_bold,
+    to_italic, to_sans, to_upright,
 };
 use crate::parser::Parser;
 use crate::render::render as render_expr;
