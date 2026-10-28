@@ -152,6 +152,16 @@ fn latex_style_parentheses_render_as_paired_delimiters() {
     assert!(rendered.contains('(') || rendered.contains('⎛'));
     assert!(rendered.contains(')') || rendered.contains('⎠'));
     assert!(rendered.contains('x'), "expected italic x: {rendered:?}");
+    // Inner must exclude the left delimiter (no duplication).
+    assert!(
+        !rendered.contains("(("),
+        "left delimiter leaked into inner: {rendered:?}"
+    );
+    assert_eq!(
+        rendered.matches('(').count(),
+        1,
+        "expected single left paren: {rendered:?}"
+    );
 }
 
 #[test]
@@ -191,17 +201,35 @@ fn stretchy_brackets_use_side_correct_extensions() {
 }
 
 #[test]
-fn pipe_delimiters_render_like_abs() {
-    assert_eq!(
-        txm::render("|x|").unwrap(),
-        txm::render(r"\abs{x}").unwrap()
-    );
-
+fn pipe_is_literal_while_abs_stays_stretchy() {
+    // `|` is a literal bar, not an auto delimiter.
     let rendered = txm::render("|x|").unwrap();
-    assert!(rendered.contains('x'), "expected italic x: {rendered:?}");
     assert!(
-        rendered.contains('│'),
-        "expected pipe delimiters: {rendered:?}"
+        rendered.contains('|'),
+        "expected literal pipe: {rendered:?}"
+    );
+    assert!(rendered.contains('x'), "expected italic x: {rendered:?}");
+
+    // Stretchy abs still comes from `\abs` / `\left| \right|`.
+    let abs_rendered = txm::render(r"\abs{x}").unwrap();
+    assert!(
+        abs_rendered.contains('│'),
+        "expected stretchy abs delimiter: {abs_rendered:?}"
+    );
+    let leftright = txm::render(r"\left| x \right|").unwrap();
+    assert!(
+        leftright.contains('│') || leftright.contains('|'),
+        "expected abs delimiters: {leftright:?}"
+    );
+    // Inner must exclude the left `|` (no `│|x│` duplication).
+    assert!(
+        !leftright.contains('|'),
+        "left pipe leaked into inner: {leftright:?}"
+    );
+    assert_eq!(
+        leftright.matches('│').count(),
+        2,
+        "expected single abs pair: {leftright:?}"
     );
 }
 

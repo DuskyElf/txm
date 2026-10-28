@@ -235,6 +235,7 @@ impl<'a> Parser<'a> {
         | Some(Token::Command(_))
         | Some(Token::Escape(_))
         | Some(Token::Bang)
+        | Some(Token::Pipe)
         | Some(Token::Ampersand)
         | Some(Token::Slash)
         | Some(Token::Comma)
@@ -372,13 +373,9 @@ impl<'a> Parser<'a> {
                 Ok(Expr::Escape(s))
             }
             Token::Pipe => {
-                let inner = self.parse_expr()?;
-                self.expect(Token::Pipe)?;
-                Ok(Expr::Command {
-                    name: "|".into(),
-                    opts: vec![],
-                    args: vec![inner],
-                })
+                // `|` is a literal bar, never an auto delimiter.
+                // Abs comes from `\abs{...}` or `\left| ... \right|`.
+                Ok(Expr::Ident("|".into()))
             }
             Token::Minus => {
                 // Unary minus if an operand follows (`-x`), otherwise a bare
@@ -424,7 +421,8 @@ impl<'a> Parser<'a> {
             .and_then(|tok| tok.as_char())
             .ok_or(ParseError::ExpectedDelimiter { side: "left" })?;
 
-        let inner_start = self.pos;
+        // `self.pos` points at the left delimiter itself; inner starts after it.
+        let inner_start = self.pos + 1;
         let mut depth = 0usize;
         let mut match_idx = None;
 
