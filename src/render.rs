@@ -13,7 +13,7 @@ pub fn render(
             let mut node = LayoutNode::text(s.chars().collect());
 
             // un-italic if it is a delimiter
-            node.style = if matches!(s.as_str(), "(" | ")" | "[" | "]") {
+            node.style = if matches!(s.as_str(), "(" | ")" | "[" | "]" | "|" | "│") {
                 ctx.current_style.un_italic()
             } else {
                 ctx.current_style

@@ -192,7 +192,6 @@ fn build_registry() -> SymbolRegistry {
     }
 
     r.register("abs", AbsGlyph);
-    r.register("|", AbsGlyph);
 
     r.register("mathbb", AlphabetGlyph(to_bb as fn(char) -> char));
 
